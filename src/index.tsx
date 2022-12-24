@@ -1,8 +1,50 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+// import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { routerReducer, routerMiddleware } from 'react-router-redux';
+import thunkMiddleware from 'redux-thunk';
+import logger from 'redux-logger';
+
+import history from './history';
+import midiMiddleware from './middleware/midi';
+// import configurationMiddleware from './middleware/configuration';
+// import controlCodeMiddleware from './middleware/controlcode';
+// import minilogueDiscoveryMiddleware from './middleware/discovery';
+// import programMiddleware from './middleware/program';
+import { reducers } from './reducers/app';
+import App from './components/App';
+import './App.css';
+
+let middleware = [
+  routerMiddleware(history),
+  midiMiddleware,
+  // configurationMiddleware,
+  // controlCodeMiddleware,
+  // programMiddleware,
+  // minilogueDiscoveryMiddleware,
+  thunkMiddleware,
+];
+
+if (process.env.NODE_ENV !== 'production') {
+  middleware = [...middleware, logger];
+}
+
+const rootReducer = combineReducers({
+  ...reducers,
+  routerReducer,
+});
+
+const store = createStore(
+  rootReducer,
+  applyMiddleware(...middleware),
+);
+
+
+
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
